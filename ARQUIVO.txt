@@ -1,0 +1,630 @@
+
+//**************************************************************
+//*															   *
+//*	    Script Configuração VL10  - Sr7 (Neway N776)      	   *
+//*															   *
+//**************************************************************
+
+//--------------------------------------------------------------------------
+
+//Modo de Energia
+>VSPK,2350,2200,0970,0930,0360,0340,0350,0340,0350,0340,0430,0425,0340,0800,0450,+50,+70,0000,0000,0000<
+
+//--------------------------------------------------------------------------
+
+//***************************************
+//*      Mensagens Personalizadas       *
+//*       Discretas Virtuais            *
+//*            Versão 0.3               *
+//***************************************
+
+//Mensagem de rastreamento completa
+//Tamanho Máximo RUV00: 137 bytes
+>SUC00 PLN0.3,4,3 QGP,4,40 QUV01,9,44 PLN0,4,1 QAD,40,8 QCT64,7,6 QCT27,8,4 QCT01,7,8 QTB000,8,12<
+>SUC01 PLN0,4,1 GVHVCT92,10,8 PLN0,4,1 PLNFFFFFFFF,4,8 PLNFFFFFFFF,4,8 GVDVCT02/360,17,7<
+
+//Envio de Texto (Ex: Apontamentos, Mensagens)
+>SUC02 QUV00,9,137 QTB050,8,40<
+
+//03 - Ignição Ligada/Dallas
+>SUC03 QUV00,9,147<
+
+//04 - Ignição Desligada
+>SUC04 QUV00,9,147 QCT20,7,5 QCT21,7,5 QCT22,7,5 QCT23,7,5 QCT24,7,5<
+
+//05 - Complemento da Ignição OFF Tempos de Entradas Digitais (Implementa a UC6)
+>SUC05 QUV06,9,200 QCT30,7,5 QCT31,7,5 QCT32,7,5 QCT33,7,5 QCT34,7,5<
+
+//06 - Faixas de Velocidade
+>SUC06 PLN0.1,4,3 QIM,4,12 QCT40,7,5 QCT41,7,5 QCT42,7,5 QCT43,7,5 QCT44,7,5 QCT45,7,5 QCT46,7,5 QCT47,7,5<
+
+//07 - Inicio de Infracao
+>SUC07 QUV00,9,147 QCT54,7,10<
+
+//08 - Fim da Infração
+>SUC08 QUV00,9,147 QCT50,7,6 QCT51,7,6 QCT52,7,6 QCT53,7,6<
+
+//09 - Freada e Aceleração
+>SUC09 QUV00,9,147 QCT55,7,10 QCT54,7,10<
+
+>SUC10 QCT96,7,10 QCT16,7,10 QCT04,7,10 QCT05,7,10 QCT06,7,10 QCT07,7,10 QCT08,7,10 QCT09,7,10 QCT11,7,10 QCT12,7,10 QCT13,7,10<
+
+>SUC11 QPP,20,8 QUT15,20,10 QUT04,20,9 QUT09,20,10 QUT13,20,10 QUT16,20,10 QUT17,20,10 QUT56,20,10 QIT00,4,13 QIT01,4,13<
+
+//12 - Mensagem Informações Tablet
+>SUC12 QGP,4,40 QGV,4,8 QIN,20,8 QCT88,7,10 QCT96,7,10 QCT64,7,6 QCT27,8,4 QCT10,7,6 QCT01,7,8 QCT02,7,10 QTB000,8,12<
+
+//13 - Versão Scripts e configurações
+>SUC13 QUV00,9,16 QVR,31,11 QVR,25,5 QSN,4,8 C19,5,12 QTP00,7,15 QTP01,7,15 QTP02,7,15 QTP03,7,15 QTP04,7,15 QTP05,7,15<
+
+//14 - Versão Scripts e configurações dos Acessorios (Modem Satelital)
+>SUC14 QUV00,9,16 QRU07,52,7 QRU07,44,7 QUT25,29,11 PLN0,4,1 PLN0,4,1 PLN0,4,1 PLN0,4,1<
+
+//15 - Reservada
+
+//--------------------------------------------------------------------------
+
+//****************************************
+//*    		Grupos de Alarmes			 *
+//****************************************
+
+//Limpa a variavel de alarmes
+>SCT88 0<
+
+// Mensagem Recebida		(Alarme_30)
+// Pedido Motorista			(Alarme_28)
+// Pedido de Apontamento	(Alarme_25)
+// Excesso RPM				(Alarme_22)
+// Velocidade				(Alarme_21)
+// Banguela					(Alarme_20)
+// Aceleração Brusca		(Alarme_13)
+// Freada Brusca			(Alarme_12)
+// Cinto                	(Alarme_11)
+// Motorista Identificado	(Alarme_09)
+// Ignição On				(Alarme_08)
+// Condução Ininterrupta	(Alarme_05)
+// Troca de Marcha			(Alarme_04)
+// Troca Lim de Velocidade	(Alarme_03)
+// Parada com Motor Ligado	(Alarme_00)
+// O valor do CT16 é o somatorio dos pesos dos alarmes acima
+
+//Alarmes ativos por default
+//>SCT16 768<
+
+//Desabilita alarmes
+>SED14 TT00++ +- SGN NN {SCT88 |VCT16&2147483648}<
+
+//Alarme tipo 1 - CT88 entre 1 e 15
+//Bit 0 - Parada com Motor Ligado	-	1
+//Bit 1 - Reservado					-	2
+//Bit 2 - Reservado					-	4
+
+//Bit 3 - Troca Lim de Velocidade   -	8
+>SUT40,QCT88,7,10,1,15<
+>SED170 TT00++ UC40++ SGN NN {SSXP11000010B4,1,1}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 2 - CT88 entre 16 e 255
+//Bit 4 - Troca de Marcha			-	16
+//Bit 5 - Condução Ininterrupta		-	32
+//Bit 6 - Reservado					-	64
+//Bit 7 - Reservado 				-	128
+>SUT41,QCT88,7,10,16,255<
+>SED171 TT00++ UC41++ SGN NN {SSXP11000010B6,1,1}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 3 - CT88 entre 256 e 4095
+//Bit 8  - Ignicao On				-	256
+//Bit 9  - Motorista				-	512
+//Bit 10 - Reservado				-	1024
+//Bit 11 - Cinto     				-	2048
+>SUT42,QCT88,7,10,256,4095<
+>SED172 TT00++ UC42++ SGN NN {SSXP11000020}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 4 - CT88 entre 4096 e 65535
+//Bit 12 - Freada Brusca			-	4096
+//Bit 13 - Aceleracao Brusca		-	8192
+//Bit 14 - Reservado				-	16384
+//Bit 15 - Reservado 				-	32768
+>SUT43,QCT88,7,10,4096,65535<
+>SED173 TT00++ UC43++ SGN NN {SSXP11000010B4,2,1}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 5 - CT88 entre 65536 e 1048575
+//Bit 16 - Alternador				-	65536
+//Bit 17 - Temperatura Motor		-	131072
+//Bit 18 - Analogicas				-	262144
+//Bit 19 - Reservado 				-	524288
+>SUT44,QCT88,7,10,65536,1048575<
+>SED174 TT00++ UC44++ SGN NN {SSXP11000010B8,2,2}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 6 - CT88 entre 1048576 e 16777215
+//Bit 20 - Banguela					-	1048576
+//Bit 21 - Velocidade				-	2097152
+//Bit 22 - RPM						-	4194304
+//Bit 23 - Reservado 				-	8388608
+>SUT45,QCT88,7,10,1048576,16777215<
+>SED175 TT00++ UC45++ SGN NN {SSXP11000010B2,5,2}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 7 - CT88 entre 16777216 e 67108863
+//Bit 24 - Reservado				-	16777216
+//Bit 25 - Pedido de Apontamento	-	33554432
+>SUT46,QCT88,7,10,16777216,67108863<
+>SED176 TT00++ UC46++ SGN NN {SSXP11000010B8,1,1}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 8 - CT88 entre 67108864 e 268435455
+//Bit 26 - Reservado				-	67108864
+//Bit 27 - Reservado 				-	134217728
+>SUT47,QCT88,7,10,67108864,268435455<
+>SED177 TT00++ UC47++ SGN NN {SSXP11000050}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 9 - CT88 entre 268435456 e 1073741823
+//Bit 28 - Pedido Motorista			-	268435456
+//Bit 29 - Reservado				-	536870912
+>SUT48,QCT88,7,10,268435456,1073741823<
+>SED178 TT00++ UC48++ SGN NN {SSXP11000010B2,8,2}{SCT92 VCT88}{SCT88 0}<
+
+//Alarme tipo 10 - CT88 1073741824
+//Bit 30 - Mensagem Recebida		-   1073741824
+>SUT49,QCT88,7,10,1073741824,2147483647<
+>SED179 TT00++ UC49++ SGN NN {SSXP1100001B08,2,1}{SCT92 VCT88}{SCT88 0}<
+
+//Bit 31 não pode ser utilizados, pois UTs são 'signed'
+
+//---------------------------------------------------------------------------
+
+//****************************************
+//*    Ignição   (Entrada IN07) 		 *
+//*	  	Início de Operação				 *
+//****************************************
+
+//Evento Ignição ON - Envia mensagem 3 e bipe curto de 100ms, limpa variáveis.
+//FLAG 26 em 1 -> Trecho em ocorrencia
+>SED21 TT00++ IN07++||UC15++&&SG26--&&IN07++ GF0 V3 {SSH261}{SCT2047 0}{CIM}{SCT88 |VCT16&256}{SSO}<
+
+//Evento Ignição OFF - Envia mensagens 4 (Ignição Off) e 5 (Faixas de Velocidade e Tempos das Entradas Digitais)
+>SED25 TT00++ IN07--&&SG26++ GF0 V4 {SCC01 60}{SCT64 0}{SCT27 0}{SSO}<
+>SED28 TT00++ IN07--&&SG26++ GF0 V5 {SSH260}<
+
+//Garante que o valor enviado de velocidade e RPM quando a ignição estiver desligada seja zero.
+>SED29 TT00++ IN07-- SGN NN {SCT64 0}{SCT27 0}{SCT7576 0}{CDM}<
+
+//--------------------------------------------------------------------------
+
+//*********************
+//*  Tracking IGN ON  *
+//*********************
+
+//Tracking Ign ON - Configuracao Timer 02 para envio a cada
+//30segundos e 1KM, o que ocorrer depois, ou no máximo a cada 5 minutos
+>STD020900<
+
+//Tracking Ign ON - Evento de envio da mensagem 0 com ignição ligada.
+>SED00 TD02++ IN07++ GF0 V0 {CTD02}{CTD03}<
+
+//--------------------------------------------------------------------------
+
+//*********************
+//*  Tracking IGN OFF *
+//*********************
+
+//Tracking Ign ON - Configuracao Timer - Configuracao Timer 03 para envio a cada 30 minutos
+>STD033600<
+
+//Tracking Ign ON - Evento de envio da mensagem 0 com ignição desligada.
+>SED01 TD03++ IN07--&&IN06++ GF0 V0 {CTD02}{CTD03}<
+
+//--------------------------------------------------------------------------
+
+//*****************************
+//*  Tracking Power On/Off    *
+///****************************
+
+//Tracking Reset Power Off - Ocorre quando a alimentação principal é desligada
+>SED06 IN06-- +- GF0 V0 {SCC58 20}<
+
+//Tracking Reset Power On - Ocorre quando a alimentação principal é ligada
+>SED07 IN06++ +- GF0 V0 {SCC58 20}<
+
+//--------------------------------------------------------------------------
+
+//*********************
+//*  Tracking Angulo  *
+//*********************
+
+//Tracking Angulo - Evento
+>SED03U<
+
+//--------------------------------------------------------------------------
+/***************
+//*  Horímetro  *
+//***************
+
+//Motor Girando
+>SUT15,QCT27,7,15,400,9999<
+
+//----------------------------------------------------------------------------
+
+//********************
+//*   Faixas RPM     *
+//********************
+
+//************************************************************
+//* Faixas de RPM:	* Descrição			* PR * CT * Evento   *
+//************************************************************
+//* 0400 a 1100  RPM  	* Marcha Lenta		* 11 * 20 *  110 *
+//* 1101 a 1299 RPM  	* Entre Faixas A	* 12 * 21 *  111 *
+//* 1300 a 4000 RPM  	* Faixa Verde		* 13 * 22 *  112 *
+//* 4001 a 4499 RPM  	* Entre Faixas B 	* 14 * 23 *  113 *
+//* 4500 a 9999 RPM  	* Excesso de RPM	* 15 * 24 *  114 *
+//************************************************************
+
+//RPM Marcha Lenta
+>SUT04,QCT27,7,15,400,600<
+>SED110 TT00++ UC04++ SGN NN {SCT20 +1}<
+
+//RPM Entre Faixas A
+>SUT05,QCT27,7,15,601,1099<
+>SED111 TT00++ UC05++ SGN NN {SCT21 +1}<
+
+//RPM Faixa Verde
+>SUT09,QCT27,7,15,1100,1500<
+>SED112 TT00++ UC09++ SGN NN {SCT22 +1}<
+
+//RPM Entre Faixas B
+>SUT10,QCT27,7,15,1501,2199<
+>SED113 TT00++ UC10++ SGN NN {SCT23 +1}<
+
+//RPM Excesso
+>SUT13,QCT27,7,15,2200,9999<
+>SED114 TT00++ UC13++ SGN NN {SCT24 +1}<
+
+//RPM Faixa Verde Ext. (Freio Motor)
+>SUT16,QCT27,7,15,1100,2199<
+
+//RPM Ex. RPM Evento (Freio Motor)
+>SUT17,QCT27,7,15,2200,9999<
+
+//--------------------------------------------------------------------------
+
+//**********************************
+//*  Rotação de Troca de Marcha    *
+//**********************************
+
+//Configura a troca de Marcha
+>SUT56,QCT27,7,15,0000,9999<
+
+//Evento de Troca de Marcha
+>SED160U<
+
+//--------------------------------------------------------------------------
+
+//***************************
+//*  	 Faixas Velocidade  *
+//***************************
+
+//Contabilizado em segundos
+
+//****************************************************************
+//* Faixas de VEL	* Descrição				  * GS * CT * Evento *
+//****************************************************************
+//* 004 a 020 Km/h  * Faixa 1                 * 01 * 41 *  131   *
+//* 021 a 040 Km/h  * Faixa 2                 * 02 * 42 *  132   *
+//* 041 a 060 Km/h  * Faixa 3                 * 03 * 43 *  133   *
+//* 061 a 080 Km/h  * Faixa 4                 * 04 * 44 *  134   *
+//* 081 a 100 Km/h  * Faixa 5                 * 05 * 45 *  135   *
+//* 101 a 120 Km/h  * Faixa 6                 * 06 * 46 *  136   *
+//* 121 a 999 Km/h  * Faixa 7                 * 07 * 47 *  137   *
+//****************************************************************
+
+//Faixa de Velocidade 1 - Configuração
+>SGS01004020<
+//Faixa de Velocidade 1 - Conta Tempo
+>SED131 TT00++ GS01++ SGN NN {SCT41 +1}<
+
+//Faixa de Velocidade 2 - Configuração
+>SGS02021040<
+//Faixa de Velocidade 2 - Conta Tempo
+>SED132 TT00++ GS02++ SGN NN {SCT42 +1}<
+
+//Faixa de Velocidade 3 - Configuração
+>SGS03041060<
+//Faixa de Velocidade 3 - Conta Tempo
+>SED133 TT00++ GS03++ SGN NN {SCT43 +1}<
+
+//Faixa de Velocidade 4 - Configuração
+>SGS04061080<
+//Faixa de Velocidade 4 - Conta Tempo
+>SED134 TT00++ GS04++ SGN NN {SCT44 +1}<
+
+//Faixa de Velocidade 5 - Configuração
+>SGS05081100<
+//Faixa de Velocidade 5 - Conta Tempo
+>SED135 TT00++ GS05++ SGN NN {SCT45 +1}<
+
+//Faixa de Velocidade 6 - Configuração
+>SGS06101120<
+//Faixa de Velocidade 6 - Conta Tempo
+>SED136 TT00++ GS06++ SGN NN {SCT46 +1}<
+
+//Faixa de Velocidade 7 - Configuração
+>SGS07121999<
+//Faixa de Velocidade 7 - Conta Tempo
+>SED137 TT00++ GS07++ SGN NN {SCT47 +1}<
+
+//--------------------------------------------------------------------------
+
+//***************************************
+//*  Tempo Entradas Digitais Acionadas  *
+//***************************************
+
+//Entrada Digital 0 (Discreta 1)
+>SED120 TT00++ IN00++ SGN NN {SCT30 +1}<
+
+//Entrada Digital 1 (Discreta 2)
+>SED121 TT00++ IN01++ SGN NN {SCT31 +1}<
+
+//Entrada Digital 2 (Discreta 3)
+>SED122 TT00++ IN02++ SGN NN {SCT32 +1}<
+
+//Entrada Digital 3 (Discreta 4) ---> Velocidade por fio (Desativada)
+//>SED123 TT00++ IN03++ SGN NN {SCT33 +1}<
+
+//Entrada Digital 4 (Discreta 5) ---> RPM (Desativada)
+//>SED124 TT00++ IN04++ SGN NN {SCT34 +1}<
+
+//--------------------------------------------------------------------------
+
+//************************
+//*	 Discretas Virtuais  *
+//************************
+
+>SED10U<
+>SED11U<
+>SED12U<
+>SED13U<
+
+//--------------------------------------------------------------------------
+
+//****************************************
+//*	Função: Infração Excesso RPM (UC13)  *
+//****************************************
+
+>SUT12U<
+>SED32U<
+>SED33U<
+>SED143U<
+>SED144U<
+>SED145U<
+
+//--------------------------------------------------------------------------
+//*******************************
+//*    Parada com Motor Ligado  *
+//*******************************
+
+>SED36U<
+>SED37U<
+>SED146U<
+>SED147U<
+>SED148U<
+>SED153U<
+
+//-----------------------------------------------------------------------------
+
+//**********************************
+//*  Uso do Limpador Parabrisa     *
+//**********************************
+
+>SED70U<
+>SED71U<
+>SED72U<
+>SED73U<
+>SED74U<
+>SED75U<
+>SED76U<
+
+//--------------------------------------------------------------------------
+
+//*******************************
+//*    Excesso Velocidade       *
+//*******************************
+
+>SED30U<
+>SED31U<
+>SED140U<
+>SED141U<
+>SED142U<
+
+//--------------------------------------------------------------------------
+
+//********************************
+//*  Desaceleração e aceleração  *
+//********************************
+
+>SED206U<
+>SED207U<
+>SED208U<
+
+//--------------------------------------------------------------------------
+
+//**********************************
+//*  Identificação de Motorista    *
+//**********************************
+
+//DesabIlita protocolo Ibutton
+>SIO<
+
+//Ativa identificação de Condutor
+>SSH111<
+
+//Configura Prefixo RF
+>STB000 PLNRF,4,2<
+
+//Captura ID do mifare
+>SRU00 IDI:,4,1,60<
+>SRU01 RID,4,1,60<
+
+//Evento mifare Lido
+>SED18U<
+>SED19 RU01++ SG06-- SGN NN {SCT88 |VCT16&512}{STB000 PLNRF,4,2}{STB002,QRU01,40,12}{SSH061}<
+>SED20 SG06++ +- GF0 V3 {SCC01 30}{STBF}<
+
+//Garante que terá alguma coisa no buffer
+>SED100 IN07+- SG11-- SGN NN {STB000 PLN000000000000,4,12}<
+
+//Evento que dispara Alarme Pedido de motorista quando a ignição é ligada
+>SED101 TT00++ IN07++&&SG06--&&SG11++ SGN NN {SCT88 |VCT16&268435456}<
+
+//Limpa o Cartão após Ign desligada
+>SED102 TT00++ IN07--&&CL01++ SGN NN {SSH060}<
+ 
+//Não apagar o conteúdo da TB000, somente até receber um TBLA com SSH060, depois disso pode apagar o conteúdo.
+>SED103 RU03++ SG06-- SGN NN {STB000 PLN000000000000,4,12}<
+
+//Evento não está sendo utilizado
+>SED104U<
+>SED105U<
+
+>SUT28U<
+
+//--------------------------------------------------------------------------
+
+//*************************
+//* Freio Motor (J1939)   *
+//*************************
+
+>SED77U<
+>SED78U<
+
+//--------------------------------------------------------------------------
+
+//***************************
+//*  Envio da configuração	*
+//***************************
+
+//Envia to dia às 01hs ou 02hs horário de verão
+>STR15 040000<
+
+>SED180 CL58++ +- GF0 AX {QUV00,9,3 QUV10,9,120 QCT14,7,10 QCT15,7,10}<
+>SED181 CL58++ +- GF0 AX {PLN0.4,4,3 QUV11,9,200 QIT02,4,13 QIT03,4,13 QIT04,4,13}<
+>SED182U<
+>SED183 CL58++ +- GF0 AX {QUV13,9,180}<
+>SED184 CL58++ +- GF0 AX {QUV14,9,180}<
+>SED157 TR15++ +- SGN NN {SCC57 2}{SCC58 5}<
+
+//Captura Versão do Firmware Modem Satelital
+>SRU07 RVR_GSP,4,0,60<
+
+//Consulta Versão do Firmware Modem Satelital
+>SED38 CL57++ VX08++ VGL AC {>QVR<}<
+
+//--------------------------------------------------------------------------
+
+//****************************
+//* Logger				     *
+//****************************
+
+>SED93 TT00++ IN07++||UC15++ SGN NN {SCC15 120}<
+
+//Em caso de falha de RAM, posiona o ponteiro de logger na última posição
+>SED94 RT63++ +- SGN NN {QDLS311229235959}<
+
+//Armazena Versao,Vel, RPM
+>SED95 TT00++ SG13++&&CL15-- LOG AX {PLN03,4,2 GVDVCT64,14,3 QCT27_6D,9,3}<
+
+//Armazena Discreta Virtual 1
+>SED96 TT00++ SG13++&&CL15-- LOG AX {GVHVCT78,10,8}<
+
+//Armazena Discreta Virtual 2
+>SED97 TT00++ SG13++&&CL15-- LOG AX {GVHVCT79,10,8}<
+
+//Armazena GP
+>SED98 TT00++ SG13++&&CL15-- LOG GP<
+
+//Armazena Hodometro
+>SED99 TT00++ SG13++&&CL15-- LOG AX {QCT01,7,10}<
+
+//--------------------------------------------------------------------------
+
+//********************
+//* Watchdog Tablet  *
+//********************
+
+//O Tablet envia um SCC50 10 a cada 10 segundos, mantendo o contador em um valor alto.
+//Caso falte a comunicação com o tablet o contador zera e dispara o evento 05
+>SED05 CL50++ IN07++&&SG27++ GF0 V0 {SSH270}<
+
+//Informa que a conexão foi reestabelecida entre o tablet e copiloto, 
+//O tablet reenvia a SCC50 10 a cada 10 segundos, mantendo o contador em um valor alto.
+>SED04 CL50-- IN07++&&SG27-- GF0 V0 {SSH271}<
+
+//--------------------------------------------------------------------------
+
+//**********************
+//*  Mensagens Tablet  *
+//**********************
+
+//Captura as mensagens TBL enviadas pelo tablet
+>SRU02 TBL,4,000,050<
+
+//Mensagens do tablet que começam com TBL são capturadas e repassadas no evento 68
+>SED68 RU02++ +- GF0 V2 {STB050 QRU02,39,40}<
+
+//Envio para o tablet confirmando que o VL10 recebeu a mensagem
+>SED192 RU02++ +- TRM AX {QRU02,39,42}<
+
+//--------------------------------------------------------------------------
+
+//**********************
+//* Informações Tablet *
+//**********************
+
+//Habilita envio da SUC12 - UC
+//Habilita a Flag 27 em 1
+//Envia cada segundo mensagem SUC12 para o tablet
+>SED169 TT00++ SG27++&&RU02-- TRM UC<
+
+//--------------------------------------------------------------------------
+
+//*******************
+//* Proteção Virnet *
+//*******************
+
+//Quando no buffer de saida tenha envios pendentes: realiza um reset na virnet
+//e limpa o buffer de saida
+>SED199 CC50++||IA30++ +- SGN NN {CBU}{SVP0_1}<
+
+//--------------------------------------------------------------------------
+
+//******************
+//*   Heartbeat    *
+//******************
+
+//Captura os apontamentos enviados pelo tablet CT19
+//TBLA00=aaaaaaaa,bbbbb,cccc
+//TBLAP=aa,cccc 
+//aaaaaaaa: apontamento
+//bbbb: 	nota fiscal
+//cccc:		sequencia da msg
+>SRU03 TBLA,4,000,050<
+
+//Captura o código do APT (hex(3D)simbolo =)
+>SUT57,QRU03,C3D,1,10,0,0<
+
+//Heartbeat GPRS
+//Para garantir que só vai tentar mandar gprs quando estiver com o socket aberto.
+>SED58 TD01++ GR21++&&IA00--&&BF17-- GR0_SL V2 {SCT19 RUT57}{STB050 QCT19,7,10}<
+
+//Heartbeat Satelital
+>SED09 TD09++||WF11++ VX08++ GL0_SL V2 {SCT19 RUT57}{STB050 QCT19,7,10}<
+
+//--------------------------------------------------------------------------
+//Capturador  de Texto RU - Reservadas
+>SRU04<
+
+//----------------------------------------------------------------------------
+
+//*************
+//*  Versao   *
+//*************
+>STP03 CB_S7_N7.210120<
+>SSO<
+
+//---------------------------------------------------------------------------
