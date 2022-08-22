@@ -7,7 +7,7 @@ import re
 from pprint import pprint 
 import collections
 import sys
-# path = dlg.askopenfilename()
+from tkinter import messagebox
 
 comandos_intocaveis = ['>SED50U<;','>SED51U<;','>SED52U<;','>SED53U<;','>SED54U<;','>SED55U<;','>SED56U<;','>SED57U<;','>SED200U<;','>SED201U<;','>SED202U<;']
 list_suts = []
@@ -25,6 +25,8 @@ for i in range(60):
 for i in range(256):
     list_seds.append('>SED' + str(i).zfill(2) + 'U<;')
 
+
+
 def GerarJson():
     global cabeçalho
     Tidarquivo = ('"' + idarquivo.get() + '"')
@@ -35,8 +37,10 @@ def GerarJson():
     TlimiteVel = ('"' + limiteVel.get() + '"')
     TlimiteEV = ('"' + limiteEV.get() + '"')
     TtempoInfra = ('"' + TempoInfra.get() + '"')
+    hash = ',"hash":""}'
+    Jnome = nome.get()
     cabeçalho = '{"idarquivo":'+Tidarquivo+',"tipo":'+Ttipo+',"hardware":'+Thardware+',"configs":[{"Versão":'+Tversao+'},{"idarquivo":'+Tidarquivo+'},{"Mifare":'+Tmifare+'},{"limite Vel":'+TlimiteVel+'},{"limite Vel Evento":'+TlimiteEV+'},{"Tempo Infração":'+TtempoInfra+'}],"comandos":"'
-    with open ('lista2.json','w',encoding='utf-8') as f2:
+    with open (f'{Jnome}.json','w',encoding='utf-8') as f2:
         f2.write(cabeçalho)
         for i in range(len(resto_comandos)):
             f2.write(resto_comandos[i] + ';')
@@ -88,16 +92,18 @@ Label(root, text= "Tempo Infração", background="#dde", foreground="#009", anch
 TempoInfra=Entry(root)
 TempoInfra.place(x=10,y=310,width=200,height=20)
 
+Label(root, text= "Nome JSON", background="#dde", foreground="#009", anchor=W).place(x=10,y=330, width=100,height=20)
+nome=Entry(root)
+nome.place(x=10,y=350,width=200,height=20)
 
-Button(root, text="Gerar", command=GerarJson).place(x=50,y=340,width=100,height=20)
 
+Button(root, text="Gerar", command=GerarJson ).place(x=10,y=370,width=80,height=20)
 
-
-with open('ARQUIVO.txt') as f:
+messagebox.showinfo("Escolha arquivo", "escolher arquivo .txt para gerar o JSON")
+path = dlg.askopenfilename()            
+with open(f'{path}') as f:
     tudo = f.read()
-
 SUCS = sorted(re.findall(r'(>SUC.*<)', tudo))
-
 for i in range(len(SUCS)):
     l1 = (re.findall('(>SUC\d{1,})', SUCS[i]))
     for k in range(len(l1)):
@@ -106,10 +112,7 @@ for i in range(len(SUCS)):
         lista_removida.append(SUCS[i])
         list_sucs[indice] = (SUCS[i] + ';')
 
-
-
 SUTS = sorted(re.findall(r'(>SUT.*<)', tudo))
-
 for i in range(len(SUTS)):
     l1 = (re.findall('(>SUT\d{1,})', SUTS[i]))
     for k in range(len(l1)):
@@ -117,8 +120,6 @@ for i in range(len(SUTS)):
         indice = int(l3[k])
         lista_removida.append(SUTS[i])
         list_suts[indice] =(SUTS[i] + ';')
-
-
 
 SEDS = sorted(re.findall(r'(>SED.*<)', tudo))
 for i in range(len(SEDS)):
@@ -132,78 +133,12 @@ for i in range(len(SEDS)):
 
 for i in range(len(comandos_intocaveis)):
     list_seds = list(filter((comandos_intocaveis[i]).__ne__, list_seds))
-resto_comandos = re.findall('(>\S.*<)', tudo)
+    resto_comandos = re.findall('(>\S.*<)', tudo)
 
 for i in range(len(lista_removida)):
     resto_comandos = list(filter((lista_removida[i]).__ne__, resto_comandos))
 
-
-
-
-# "idarquivo":"Nepomuceno RS","tipo":"Perfil","hardware":["VIRLOC12"],"configs":[{"Versão":"220812"},{"idarquivo":"Nepomuceno RS"},{"Mifare":"Habilitado"},{"Lim Vel":"75"},{"Lim Vel Evento":"70"},{"Tempo infração":"5"}],"comandos":"
-
-# idarquivo = input('idarquivo: ')
-# idarquivo = '"' + idarquivo + '"'
-
-# tipo = input('tipo: ')
-# tipo = '"' + tipo + '"'
-
-# hardware = input('hardware: ')
-# hardware = '["' + hardware + '"]'
-
-# Versao = input('Versão: ')
-# Versao = '"' + Versao + '"'
-
-# Mifare = input('Mifare: ')
-# Mifare = '"' + Mifare + '"'
-
-# limite_vel = input('Limite Vel: ')
-# limite_vel = '"' + limite_vel + '"'
-
-# limite_vel_evento = input('Limite Vel Evento: ')
-# limite_vel_evento = '"' + limite_vel_evento + '"'
-
-# tempo_infra = input('Tempo infração: ')
-# tempo_infra = '"' + tempo_infra + '"'
-
-hash = ',"hash":""}'
-
-
-# cabeçalho = '{"idarquivo":'+idarquivo+',"tipo":'+tipo+',"hardware":'+hardware+',"configs":[{"Versão":'+Versao+'},{"idarquivo":'+idarquivo+'},{"Mifare":'+Mifare+'},{"limite Vel":'+limite_vel+'},{"limite Vel Evento":'+limite_vel_evento+'},{"Tempo Infração":'+tempo_infra+'}],"comandos":"'
-
-
-# cabeçalho = cabeçalho.decode('utf8')
-# print(cabeçalho)
-
-
-# def CriarArquivo(): 
-#     x = GerarJson()
-#     with open ('lista2.json','w',encoding='utf-8') as f2:
-#         f2.write(x)
-#         for i in range(len(resto_comandos)):
-#             f2.write(resto_comandos[i] + ';')
-#         for i in range(16):
-#             f2.write(list_sucs[i])
-#         for i in range(60):
-#             f2.write(list_suts[i])
-#         for i in range(len(list_seds)):
-#             f2.write(list_seds[i])
-#         f2.write('>SS0<')
-#         f2.write(hash)
-
-
 root.mainloop()
-
-
-
-
-
-
-
-
-
-
-
 
 
 
