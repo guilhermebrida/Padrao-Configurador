@@ -50,7 +50,7 @@ def GerarJson():
             f2.write(list_suts[i])
         for i in range(len(list_seds)):
             f2.write(list_seds[i])
-        f2.write('>SS0<')
+        f2.write('>SSO<')
         f2.write(hash)
     
 
@@ -142,34 +142,5 @@ root.mainloop()
 
 
 
-
-# class Application:
-#  def __init__(self, master=None):
-#   self.widget1 = Frame(master)
-#   self.widget1.pack()
-#   self.msg = Label(self.widget1, text="Busque o arquivo")
-#   self.msg["font"] = ("Calibri", "9", "italic")
-#   self.msg.pack()
-#   self.sair = Button(self.widget1)
-#   self.sair["text"] = "Buscar"
-#   self.sair["font"] = ("Calibri", "9")
-#   self.sair["width"] = 10
-#   self.sair["command"] = self.mudarTexto
-#   self.sair.pack()
-#   self.msg2 = Label(self.widget1, text="")
-#   self.msg2["font"] = ("Calibri", "9", "italic")
-#   self.msg2.pack()
-  
-
-#  def mudarTexto(self):
-#   if self.msg["text"] == "Busque o arquivo":
-#     path = dlg.askopenfilename()
-#     self.msg = Label(self.widget2, text = path)
-#     #  self.msg2["text"] = "NOME DO ARQUIVO AQUI"
-
-
-# root = Tk()
-# Application(root)
-# root.mainloop()
 
 
