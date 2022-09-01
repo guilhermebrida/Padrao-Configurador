@@ -39,7 +39,7 @@ def GerarJson():
     TtempoInfra = ('"' + TempoInfra.get() + '"')
     hash = ',"hash":""}'
     Jnome = nome.get()
-    cabeçalho = '{"idarquivo":'+Tidarquivo+',"tipo":'+Ttipo+',"hardware":'+Thardware+',"configs":[{"Versão":'+Tversao+'},{"idarquivo":'+Tidarquivo+'},{"Mifare":'+Tmifare+'},{"limite Vel":'+TlimiteVel+'},{"limite Vel Evento":'+TlimiteEV+'},{"Tempo Infração":'+TtempoInfra+'}],"comandos":"'
+    cabeçalho = '{"idarquivo":'+Tidarquivo+',"tipo":'+Ttipo+',"hardware":['+Thardware+'],"configs":[{"Versão":'+Tversao+'},{"idarquivo":'+Tidarquivo+'},{"Mifare":'+Tmifare+'},{"limite Vel":'+TlimiteVel+'},{"limite Vel Evento":'+TlimiteEV+'},{"Tempo Infração":'+TtempoInfra+'}],"comandos":"'
     with open (f'{Jnome}.json','w',encoding='utf-8') as f2:
         f2.write(cabeçalho)
         for i in range(len(resto_comandos)):
