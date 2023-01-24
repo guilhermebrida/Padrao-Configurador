@@ -19,3 +19,5 @@ GerarJson_Perfil      - onde gera o Json encryptado e apaga os comandos ja exist
 As bibliotecas podem ser instaladas utilizando
 
 `pip install -r requirements.txt`
+
+<h5>Os demais arquivos são versões que serviram de base para os arquivos finais</h5>
